@@ -1,2 +1,2 @@
 # Root Folders
-Put any folder here you want on the root OS drive
+Put any folders here you want on the root OS drive

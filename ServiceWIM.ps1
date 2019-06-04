@@ -91,8 +91,7 @@
 
 # Copy folders to local disk
 	Write-Output -InputObject "`nCopying Folders"
-	xcopy Adobe\*.* "$MountDir\Adobe\" /E /C /H
-	xcopy Delprof2\*.* "$MountDir\Delprof2\" /E /C /H
+	xcopy Root_Folders\*.* "$MountDir\" /E /C /H
 
 # Commit image
 	Write-Output -InputObject "`nCommiting WIM image, this may take some time"
