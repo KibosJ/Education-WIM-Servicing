@@ -12,7 +12,7 @@
 - Removes the original WIM file 
 - Applies default app associations from AppAssociations.xml
 - Disables Internet Explorer
-- Enables .NET Framework 3.5 from net35 folder 
+- Enables .NET Framework 3.5 from relevant net35 folder 
 - Modifies default registry settings
   - Customise explorer items
   - Disable lockscreen
