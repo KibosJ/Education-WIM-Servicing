@@ -1,7 +1,7 @@
 # Requires -Version 5.0
 # Requires -RunAsAdministrator
 # Requires -Modules Dism
-# Version 2.0
+# Version 1.0
 
 # Variables
 	$ScriptDir = "D:\Sources\OperatingSystems\ImageEdit"
