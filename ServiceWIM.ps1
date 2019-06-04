@@ -1,7 +1,7 @@
 # Requires -Version 5.0
 # Requires -RunAsAdministrator
 # Requires -Modules Dism
-# Version 1.0
+# Version 2.0-test
 
 # Variables
 	$ScriptDir = "D:\Sources\OperatingSystems\ImageEdit"
@@ -13,8 +13,9 @@
 # Get name of the required WIM name
 	$wim = Read-Host 'What is the name of the required WIM file, including the extension?'
 
-# Get source
+# Get source information
 	$sourceIndex = Get-WindowsImage -ImagePath:$origWIM -Name:"Windows 10 Education" | Select-Object -ExpandProperty ImageIndex
+	$sourceVersion = Get-WindowsImage -ImagePath:$origWIM -Name:"Windows 10 Education" | Select-Object -ExpandProperty Version
 
 # Extract Education index from WIM
 	Write-Output -InputObject "`nExtracting Windows 10 Education"
@@ -38,7 +39,17 @@
 
 # Install features
 	Write-Output -InputObject "`nInstalling .Net Framework 3.5 Feature"
-	dism /image:"$MountDir" /enable-feature /featurename:NetFx3 /All /LimitAccess /Source:"$ScriptDir\net35" /quiet
+	if ($sourceVersion -like "10.0.18362*") {
+		Dism /image:"$MountDir" /enable-feature /featurename:NetFx3 /All /LimitAccess /Source:"$ScriptDir\net35" /quiet	
+	}
+
+	elseif ($sourceVersion -like "10.0.17763*") {
+		Dism /image:"$MountDir" /enable-feature /featurename:NetFx3 /All /LimitAccess /Source:"$ScriptDir\net35_1809" /quiet	
+	}
+	
+	else {
+		Write-Output -InputObject "`nVersion not detected, skipping .NET Framework install"
+	}
 
 # Customise registry
 	Write-Output -InputObject "`nCustomising registry"
@@ -95,4 +106,4 @@
 
 # Commit image
 	Write-Output -InputObject "`nCommiting WIM image, this may take some time"
-	dism /Unmount-Image /MountDir:"$MountDir" /Commit
+	Dism /Unmount-Image /MountDir:"$MountDir" /Commit
