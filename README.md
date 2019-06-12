@@ -1,6 +1,6 @@
 # Education WIM Servicing
 
-**Ensure that you uncomment an parts of the script you don't need**
+**Ensure that you uncomment any parts of the script you don't need**
 
 ## What the script does?
 
