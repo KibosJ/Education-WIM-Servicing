@@ -1,11 +1,11 @@
 # Requires -Version 5.0
 # Requires -RunAsAdministrator
 # Requires -Modules Dism
-# Version 2.0
+# Version 2.1
 
 # Variables
-	$ScriptDir = "D:\Sources\OperatingSystems\ImageEdit"
-	$MountDir = "$ScriptDir\Mount"
+	$MountDir = "$PSScriptRoot\Mount"
+	$Dismexe = "${env:ProgramFiles(x86)}\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\amd64\DISM\dism.exe"
 	
 # Get vanilla WIM name
 	$origWIM = Read-Host 'What is the name of the current WIM file, including extension?'
@@ -19,32 +19,36 @@
 
 # Extract Education index from WIM
 	Write-Output -InputObject "`nExtracting Windows 10 Education"
-	Dism /Export-Image /SourceImageFile:$origWIM /SourceIndex:$sourceIndex /DestinationImageFile:$wim /Compress:Max /CheckIntegrity /quiet
+	& $Dismexe /Export-Image /SourceImageFile:$origWIM /SourceIndex:$sourceIndex /DestinationImageFile:$wim /Compress:Max /CheckIntegrity /quiet
 
 # Delete the old WIM
 	Write-Output -InputObject "`nDeleting original WIM file"
+	Set-ItemProperty -Path "$PSScriptRoot\$origWIM" -Name IsReadOnly -Value $false | Out-Null
 	Remove-Item $origWIM
 
 # Mount WIM file
 	Write-Output -InputObject "`nMounting WIM image"
-	Dism /Mount-Image /ImageFile:"$ScriptDir\$wim" /index:1 /MountDir:"$MountDir" /quiet
+	if ((Test-Path $MountDir) -eq $False) {
+	New-Item -Path $PSScriptRoot -name "Mount" -ItemType "directory"
+	}
+	& $Dismexe /Mount-Image /ImageFile:"$PSScriptRoot\$wim" /index:1 /MountDir:"$MountDir" /quiet
 
 # Apply default app associations
 	Write-Output -InputObject "`nSetting default App associations"
-	Dism /Image:"$MountDir" /Import-DefaultAppAssociations:"$ScriptDir\AppAssociations.xml" /quiet
+	& $Dismexe /Image:"$MountDir" /Import-DefaultAppAssociations:"$PSScriptRoot\AppAssociations.xml" /quiet
 	
 # Disable features	
 	Write-Output -InputObject "`nDisabling Internet Explorer"
-	Dism /Image:"$MountDir" /Disable-Feature /FeatureName:Internet-Explorer-Optional-amd64 /quiet
+	& $Dismexe /Image:"$MountDir" /Disable-Feature /FeatureName:Internet-Explorer-Optional-amd64 /quiet
 
 # Install features
 	Write-Output -InputObject "`nInstalling .Net Framework 3.5 Feature"
 	if ($sourceVersion -like "10.0.18362*") {
-		Dism /image:"$MountDir" /enable-feature /featurename:NetFx3 /All /LimitAccess /Source:"$ScriptDir\net35" /quiet	
+		& $Dismexe /image:"$MountDir" /enable-feature /featurename:NetFx3 /All /LimitAccess /Source:"$PSScriptRoot\net35" /quiet	
 	}
 
 	elseif ($sourceVersion -like "10.0.17763*") {
-		Dism /image:"$MountDir" /enable-feature /featurename:NetFx3 /All /LimitAccess /Source:"$ScriptDir\net35_1809" /quiet	
+		& $Dismexe /image:"$MountDir" /enable-feature /featurename:NetFx3 /All /LimitAccess /Source:"$PSScriptRoot\net35_1809" /quiet	
 	}
 	
 	else {
@@ -102,8 +106,8 @@
 
 # Copy folders to local disk
 	Write-Output -InputObject "`nCopying Folders"
-	xcopy Root_Folders\*.* "$MountDir\" /E /C /H
+	xcopy Root_Folders\*.* "$MountDir\" /EXCLUDE:CopyExclusions.txt /E /C /H
 
 # Commit image
 	Write-Output -InputObject "`nCommiting WIM image, this may take some time"
-	Dism /Unmount-Image /MountDir:"$MountDir" /Commit
+	& $Dismexe /Unmount-Image /MountDir:"$MountDir" /Commit
