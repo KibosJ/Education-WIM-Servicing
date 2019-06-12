@@ -1,8 +1,4 @@
-# Education WIM Servicing
-
-**Ensure that you uncomment any parts of the script you don't need**
-
-## What the script does?
+# What the script does?
 
 - Asks for the name of the original WIM file (usually just install.wim)
 - Asks for the name of the required WIM file
@@ -21,89 +17,90 @@
 - Copies folders/files from *Root_Folders* to root of WIM
 - Commits the new image
 
-## Registry edits
+# Registry edits
 
-### Explorer Items
+## Explorer Items
 
-> "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v LaunchTo /d 1  /t REG_DWORD /f
+> "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v LaunchTo /d 1  /t REG_DWORD /f`
 
-Makes Explorer launch to *This PC* instead of *Quick access*
+**Makes Explorer launch to *This PC* instead of *Quick access***
 
 > "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize"  /v StartupDelayInMSec /d 0  /t REG_DWORD /f
 
-Disables the startup delay for applications
+**Disables the startup delay for applications**
 
 >"HKLM\_SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"  /v DisableEdgeDesktopShortcutCreation /d 1  /t REG_DWORD /f
 
-Disables the creation of the Edge desktop shortcut
+**Disables the creation of the Edge desktop shortcut**
 
-### Lock screen settings
+## Lock screen settings
 
 > "HKLM\_SOFTWARE\Policies\Microsoft\Windows\Personalization"  /v NoLockscreen /d 1  /t REG_DWORD /f
 
-Disables the lock screen
+**Disables the lock screen**
 
-### Fast user switching settings
+## Fast user switching settings
+
 > "HKLM\_SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Policies\System"  /v HideFastUserSwitching /d 1  /t REG_DWORD /f
 
-Disables fast user switching options in the UI
+**Disables fast user switching options in the UI**
 
-### Taskbar/Search settings
+## Taskbar/Search settings
 >"HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search"  /v BingSearchEnabled /d 0  /t REG_DWORD /f
 
-Disables Bing search
+**Disables Bing search**
 
 >"HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search"  /v CanCortanaBeEnabled /d 0  /t REG_DWORD /f
 >
 >"HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search"  /v CortanaEnabled /d 0  /t REG_DWORD /f
 
-Disables Cortana
+**Disables Cortana**
 
 >"HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search"  /v SearchboxTaskbarMode /d 1  /t REG_DWORD /f
 
-Sets the search button in the taskbar, a value of 0 will disable the search icon
+**Sets the search button in the taskbar, a value of 0 will disable the search icon**
 
 >"HKLM\_SOFTWARE\Policies\Microsoft\Windows\Windows Search"  /v AllowSearchToUseLocation /d 0  /t REG_DWORD /f
 
-Stops search using location services
+**Stops search using location services**
 
 >"HKLM\_SOFTWARE\Policies\Microsoft\Windows\Windows Search"  /v ConnectedSearchUseWeb /d 0  /t REG_DWORD /f
 >
 >"HKLM\_SOFTWARE\Policies\Microsoft\Windows\Windows Search"  /v DisableWebSearch /d 1  /t REG_DWORD /f
 
-Disables searching the web from search
+**Disables searching the web from search**
 
 >"HKLM\_NTUSER\Software\Policies\Microsoft\Windows\Explorer"  /v HidePeopleBar /d 1  /t REG_DWORD /f
 >
 >"HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People"  /v PeopleBand /d 0  /t REG_DWORD /f
 
-Disables People features in the taskbar
+**Disables People features in the taskbar**
 
-### Cloud content settings
+## Cloud content settings
 
 >"HKLM\_SOFTWARE\Policies\Microsoft\Windows\CloudContent"  /v DisableWindowsConsumerFeatures /d 1  /t REG_DWORD /f
 
-Disables consumer features (Pre-loaded games, like Candy Crush, etc.)
+**Disables consumer features (Pre-loaded games, like Candy Crush, etc.)**
 
 >"HKLM\_SOFTWARE\Policies\Microsoft\Windows\CloudContent"  /v DisableSoftLanding /d 1  /t REG_DWORD /f
 
-Disables *Tips, Tricks, and Suggestions* notifications
+**Disables *Tips, Tricks, and Suggestions* notifications**
 
-### Content delivery manager settings
+## Content delivery manager settings
 
 >"HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SystemPaneSuggestionsEnabled /d 0 /t REG_DWORD /f
 
-Disables suggestions on start
+**Disables suggestions on start**
 
 >"HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v OemPreInstalledAppsEnabled /d 0 /t REG_DWORD /f
 
-Disables OEM pre-installed applications
+**Disables OEM pre-installed applications**
 
 >"HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v PreInstalledAppsEnabled /d 0 /t REG_DWORD /f
 
-Disables pre-installed applications
+**Disables pre-installed applications**
 
 >"HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SoftLandingEnabled /d 0 /t REG_DWORD /f
 
-Disables *Tips, Tricks, and Suggestions* notifications
+**Disables *Tips, Tricks, and Suggestions* notifications**
 
