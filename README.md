@@ -1,7 +1,5 @@
 # Education WIM Servicing
 
-**Ensure that you change the $scriptdir variable**
-
 **Ensure that you uncomment an parts of the script you don't need**
 
 ## What the script does?
