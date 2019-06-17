@@ -1,7 +1,7 @@
-# Requires -Version 5.0
-# Requires -RunAsAdministrator
-# Requires -Modules Dism
-# Version 2.1
+#Requires -Version 5.0
+#Requires -RunAsAdministrator
+#Requires -Modules Dism
+# Version 2.2
 
 # Variables
 	$MountDir = "$PSScriptRoot\Mount"
