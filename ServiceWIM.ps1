@@ -38,7 +38,7 @@
 		Set-ItemProperty -Path "$PSScriptRoot\$origWIM" -Name IsReadOnly -Value $false | Out-Null
 		Remove-Item $origWIM
 	}
-	
+
 # Mount WIM file
 	Write-Output -InputObject "`nMounting WIM image"
 	if ((Test-Path $MountDir) -eq $False) {
@@ -70,13 +70,7 @@
 	}
 	if ($InstallNetF -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Output -InputObject "`nInstalling .Net Framework 3.5 Feature"
-		if ($sourceVersion -like "10.0.18362*") {
 			& $Dismexe /image:"$MountDir" /enable-feature /featurename:NetFx3 /All /LimitAccess /Source:"$PSScriptRoot\net35" /quiet	
-		}
-
-		elseif ($sourceVersion -like "10.0.17763*") {
-			& $Dismexe /image:"$MountDir" /enable-feature /featurename:NetFx3 /All /LimitAccess /Source:"$PSScriptRoot\net35_1809" /quiet	
-		}
 	}
 
 # Customise registry
