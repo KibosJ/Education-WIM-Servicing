@@ -37,7 +37,8 @@
 		Write-Output -InputObject "`nDeleting original WIM file"
 		Set-ItemProperty -Path "$PSScriptRoot\$origWIM" -Name IsReadOnly -Value $false | Out-Null
 		Remove-Item $origWIM
-
+	}
+	
 # Mount WIM file
 	Write-Output -InputObject "`nMounting WIM image"
 	if ((Test-Path $MountDir) -eq $False) {
