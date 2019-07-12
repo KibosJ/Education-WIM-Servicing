@@ -1,6 +1,5 @@
 #Requires -Version 5.0
 #Requires -RunAsAdministrator
-#Requires -Modules Dism
 # Version 3.0b
 
 # Variables
@@ -168,11 +167,11 @@ REG UNLOAD "HKLM\_SOFTWARE" | Out-Null
 # Copy user account images
 if ($RunDefault -notlike "Y*") {
 	Write-Host "`n"
-	$UserAccImages = Read-Host 'Would you like to replace the default user account images?'
+	$UserAccPics = Read-Host 'Would you like to replace the default user account images?'
 }
-if ($UserAccImages -like "Y*" -or $RunDefault -like "Y") {
+if ($UserAccPics -like "Y*" -or $RunDefault -like "Y") {
 	Write-Host "`nCopying replacement user account images" -ForegroundColor Green
-	xcopy UserAccountImages\*.* "$MountDir\ProgramData\Microsoft\User Account Pictures\" /EXCLUDE:CopyExclusions.txt /E /C /H /Y
+	xcopy UserAccountPictures\*.* "$MountDir\ProgramData\Microsoft\User Account Pictures\" /EXCLUDE:CopyExclusions.txt /E /C /H /Y
 }
 
 # Copy folders to local disk
