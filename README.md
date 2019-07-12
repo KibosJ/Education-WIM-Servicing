@@ -1,6 +1,6 @@
 # What the script does by default?
 
-**If you choose not to run defaults, each step below will ask you if you wish to run it or not, type *y/yes* or *n/no*
+**If you choose not to run defaults, each step below will ask you if you wish to run it or not, type *y/yes* or *n/no***
 
 - Asks for the name of the original WIM file (usually just install.wim)
 - Asks for the name of the required WIM file
