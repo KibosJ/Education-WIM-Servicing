@@ -1,4 +1,6 @@
-# What the script does?
+# What the script does by default?
+
+**If you choose not to run defaults, each step below will ask you if you wish to run it or not, type *y/yes* or *n/no*
 
 - Asks for the name of the original WIM file (usually just install.wim)
 - Asks for the name of the required WIM file
@@ -14,6 +16,7 @@
   - Taskbar/search settings
   - Cloud content settings
   - Content delivery manager settings
+- Copies replacement user account pictures from *UserAccountPictures* to the WIM
 - Copies folders/files from *Root_Folders* to root of WIM
 - Commits the new image
 

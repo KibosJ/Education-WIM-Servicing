@@ -165,6 +165,16 @@ REG UNLOAD "HKLM\_NTUSER" | Out-Null
 REG UNLOAD "HKLM\_SOFTWARE" | Out-Null
 }
 
+# Copy user account images
+if ($RunDefault -notlike "Y*") {
+	Write-Host "`n"
+	$UserAccImages = Read-Host 'Would you like to replace the default user account images?'
+}
+if ($UserAccImages -like "Y*" -or $RunDefault -like "Y") {
+	Write-Host "`nCopying replacement user account images" -ForegroundColor Green
+	xcopy UserAccountImages\*.* "$MountDir\ProgramData\Microsoft\User Account Pictures\" /EXCLUDE:CopyExclusions.txt /E /C /H /Y
+}
+
 # Copy folders to local disk
 if ($RunDefault -notlike "Y*") {
 	Write-Host "`n"
@@ -172,7 +182,7 @@ if ($RunDefault -notlike "Y*") {
 }
 if ($CopyRoot -like "Y*" -or $RunDefault -like "Y*") {
 	Write-Host "`nCopying Folders" -ForegroundColor Green
-	xcopy Root_Folders\*.* "$MountDir\" /EXCLUDE:CopyExclusions.txt /E /C /H
+	xcopy Root_Folders\*.* "$MountDir\" /EXCLUDE:CopyExclusions.txt /E /C /H /Y
 }
 # Commit image
 Write-Host "`nCommiting WIM image, this may take some time" -ForegroundColor Green
