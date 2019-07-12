@@ -92,8 +92,10 @@ if ($CustomiseREG -like "Y*" -or $RunDefault -like "Y*") {
 	REG LOAD "HKLM\_SOFTWARE" "$MountDir\Windows\System32\config\SOFTWARE" | Out-Null
 
 # Explorer items
+	if ($RunDefault -notlike "Y*") {
 	Write-Host "`n"
 	$ExplorerREG = Read-Host 'Modify Explorer items?'
+	}
 	if ($ExplorerREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Host "`nCustomising explorer settings" -ForegroundColor Green
 		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v LaunchTo /d 1 /t REG_DWORD /f
@@ -101,22 +103,28 @@ if ($CustomiseREG -like "Y*" -or $RunDefault -like "Y*") {
 		& REG ADD "HKLM\_SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /v DisableEdgeDesktopShortcutCreation /d 1 /t REG_DWORD /f
 	}
 # Disable lockscreen
+	if ($RunDefault -notlike "Y*") {
 	Write-Host "`n"
 	$LockscreenREG = Read-Host 'Disable the lockscreen?'
+	}
 	if ($LockscreenREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Host "`nDisabling lockscreen" -ForegroundColor Green
 		& REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\Personalization" /v NoLockscreen /d 1 /t REG_DWORD /f
 	}
 # Disable fast user switching
+	if ($RunDefault -notlike "Y*") {
 	Write-Host "`n"
 	$FastUserREG = Read-Host 'Disable fast user switching?'
+	}
 	if ($FastUserREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Host "`nDisabling fast user switching" -ForegroundColor Green
 		& REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Policies\System" /v HideFastUserSwitching /d 1 /t REG_DWORD /f
 	}
 # Taskbar/Search settings
+	if ($RunDefault -notlike "Y*") {
 	Write-Host "`n"
 	$TaskbarSearchREG = Read-Host 'Modify taskbar/search settings?'
+	}
 	if ($TaskbarSearchREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Host "`nCustomising taskbar/search settings" -ForegroundColor Green
 		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search" /v BingSearchEnabled /d 0 /t REG_DWORD /f
@@ -130,16 +138,20 @@ if ($CustomiseREG -like "Y*" -or $RunDefault -like "Y*") {
 		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" /v PeopleBand /d 0 /t REG_DWORD /f
 	}
 # Cloud content settings
+	if ($RunDefault -notlike "Y*") {
 	Write-Host "`n"
 	$CloudContentREG = Read-Host 'Modify cloud content settings?'
+	}
 	if ($CloudContentREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Host "`nCustomising cloud content settings" -ForegroundColor Green
 		& REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v DisableWindowsConsumerFeatures /d 1 /t REG_DWORD /f
 		& REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v DisableSoftLanding /d 1 /t REG_DWORD /f
 	}
 # Content delivery manager settings
+	if ($RunDefault -notlike "Y*") {
 	Write-Host "`n"
 	$ContentDeliveryREG = Read-Host 'Modify content delivery manager settings?'
+	}
 	if ($ContentDeliveryREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Host "`nCustomising content delivery manager settings" -ForegroundColor Green
 		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SystemPaneSuggestionsEnabled /d 0 /t REG_DWORD /f
