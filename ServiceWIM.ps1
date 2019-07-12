@@ -6,7 +6,7 @@
 # Variables
 	$MountDir = "$PSScriptRoot\Mount"
 	$Dismexe = "${env:ProgramFiles(x86)}\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\amd64\DISM\dism.exe"
-	$RunDefault = Read-Host 'Would you like to run with defaults?'
+	$RunDefault = Read-Host '`nWould you like to run with defaults?'
 
 # Check for Windows ADK
 	$ADKcheck = Test-Path $Dismexe
@@ -16,10 +16,10 @@
 	}
 	
 # Get vanilla WIM name
-	$origWIM = Read-Host 'What is the name of the current WIM file, including extension?'
+	$origWIM = Read-Host '`nWhat is the name of the current WIM file, including extension?'
 	
 # Get name of the required WIM name
-	$wim = Read-Host 'What is the name of the required WIM file, including the extension?'
+	$wim = Read-Host '`nWhat is the name of the required WIM file, including the extension?'
 
 # Get source information
 	$sourceIndex = Get-WindowsImage -ImagePath:$origWIM -Name:"Windows 10 Education" | Select-Object -ExpandProperty ImageIndex 
@@ -30,7 +30,7 @@
 
 # Delete the old WIM
 	if ($RunDefault -notlike "Y*") {
-		$deleteoldwim = Read-Host 'Would you like to remove the old WIM file?'
+		$deleteoldwim = Read-Host '`nWould you like to remove the old WIM file?'
 	}
 	if ($deleteoldwim -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Output -InputObject "`nDeleting original WIM file"
@@ -47,7 +47,7 @@
 
 # Apply default app associations
 	if ($RunDefault -notlike "Y*") {
-		$ApplyDefaultApps = Read-Host 'Would you like to apply default app associations?'
+		$ApplyDefaultApps = Read-Host '`nWould you like to apply default app associations?'
 	}
 	if ($ApplyDefaultApps -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Output -InputObject "`nSetting default app associations"
@@ -56,7 +56,7 @@
 	
 # Disable features	
 	if ($RunDefault -notlike "Y*") {
-		$RemoveIE = Read-Host 'Would you like to remove Internet Explorer?'
+		$RemoveIE = Read-Host '`nWould you like to remove Internet Explorer?'
 	}
 	if ($RemoveIE -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Output -InputObject "`nDisabling Internet Explorer"
@@ -65,7 +65,7 @@
 
 # Install features
 	if ($RunDefault -notlike "Y*") {
-		$InstallNetF = Read-Host 'Would you like to install .Net Framework 3.5?'
+		$InstallNetF = Read-Host '`nWould you like to install .Net Framework 3.5?'
 	}
 	if ($InstallNetF -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Output -InputObject "`nInstalling .Net Framework 3.5 Feature"
@@ -74,7 +74,7 @@
 
 # Customise registry
 	if ($RunDefault -notlike "Y*") {
-		$CustomiseREG = Read-Host 'Would you like to customise the registry?'
+		$CustomiseREG = Read-Host '`nWould you like to customise the registry?'
 	}
 	if ($CustomiseREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Output -InputObject "`nCustomising registry"
@@ -128,7 +128,7 @@
 
 # Copy folders to local disk
 	if ($RunDefault -notlike "Y*") {
-		$CopyRoot = Read-Host 'Would you like to copy folder from "Root_Folders" to the root of your WIM??'
+		$CopyRoot = Read-Host '`nWould you like to copy folder from "Root_Folders" to the root of your WIM??'
 	}
 	if ($CopyRoot -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Output -InputObject "`nCopying Folders"
