@@ -6,7 +6,7 @@
 # Variables
 	$MountDir = "$PSScriptRoot\Mount"
 	$Dismexe = "${env:ProgramFiles(x86)}\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\amd64\DISM\dism.exe"
-	$RunDefault = Read-Host '`nWould you like to run with defaults?'
+	$RunDefault = Read-Host 'Would you like to run with defaults?'
 
 # Check for Windows ADK
 	$ADKcheck = Test-Path $Dismexe
