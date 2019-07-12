@@ -1,6 +1,6 @@
 #Requires -Version 5.0
 #Requires -RunAsAdministrator
-# Version 3.0b
+# Version 3.0
 
 # Variables
 $MountDir = "$PSScriptRoot\Mount"
