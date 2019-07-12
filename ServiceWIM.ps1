@@ -22,8 +22,7 @@
 	$wim = Read-Host 'What is the name of the required WIM file, including the extension?'
 
 # Get source information
-	$sourceIndex = Get-WindowsImage -ImagePath:$origWIM -Name:"Windows 10 Education" | Select-Object -ExpandProperty ImageIndex
-	$sourceVersion = Get-WindowsImage -ImagePath:$origWIM -Name:"Windows 10 Education" | Select-Object -ExpandProperty Version
+	$sourceIndex = Get-WindowsImage -ImagePath:$origWIM -Name:"Windows 10 Education" | Select-Object -ExpandProperty ImageIndex 
 
 # Extract Education index from WIM
 	Write-Output -InputObject "`nExtracting Windows 10 Education"
