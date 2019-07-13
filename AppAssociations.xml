@@ -35,6 +35,7 @@
   <Association Identifier=".srw" ProgId="AppX43hnxtbyyps62jhe9sqpdzxn1790zetc" ApplicationName="Photos" />
   <Association Identifier=".tif" ProgId="PhotoViewer.FileAssoc.Tiff" ApplicationName="Windows Photo Viewer" />
   <Association Identifier=".tiff" ProgId="PhotoViewer.FileAssoc.Tiff" ApplicationName="Windows Photo Viewer" />
+  <Association Identifier=".url" ProgId="InternetShortcut" ApplicationName="Google Chrome" />
   <Association Identifier=".wdp" ProgId="AppX43hnxtbyyps62jhe9sqpdzxn1790zetc" ApplicationName="Photos" />
   <Association Identifier=".webp" ProgId="ChromeHTML" ApplicationName="Google Chrome" />
   <Association Identifier="http" ProgId="ChromeHTML" ApplicationName="Google Chrome" />
