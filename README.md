@@ -1,4 +1,4 @@
-# What the script does by default?
+# What the Version 3 script does by default?
 
 **If you choose not to run defaults, each step below will ask you if you wish to run it or not, type *y/yes* or *n/no***
 
@@ -19,6 +19,12 @@
 - Copies replacement user account pictures from *UserAccountPictures* to the WIM
 - Copies folders/files from *Root_Folders* to root of WIM
 - Commits the new image
+
+# Changes from Version 2
+
+- Removed 1809 .NET framework check, this script will install whatever version you have in the net35 folder
+- Options, when not running as defaults, you will be prompted for what you want to run
+- Putting the relevant files in the UserAccountPictures folder will replace the default user pictures
 
 # Registry edits
 
