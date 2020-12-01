@@ -2,17 +2,35 @@
 #Requires -RunAsAdministrator
 # Version 4.0
 
+# Options
+[CmdletBinding(DefaultParameterSetName = 'CustomRun')]
+param (
+	[Parameter(	Mandatory=$true, 
+				ParameterSetName = 'DefaultRun', 
+				ValueFromPipeline=$true )]
+	[ValidateSet('Default', 'Custom', IgnoreCase)]
+	[String]$RunMode,
+
+	[Parameter( Mandatory=$true, 
+				ParameterSetName = 'CustomRun', 
+				ValueFromPipeline=$true )]
+	[ValidateSet('Education', 'Enterprise', IgnoreCase)]
+	[String]$Edition
+)
+
 # Variables
 $MountDir = "$PSScriptRoot\Mount"
 $Dismexe = "${env:ProgramFiles(x86)}\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\amd64\DISM\dism.exe"
-$RunDefault = Read-Host 'Would you like to run with defaults?'
 
 # Check for Windows ADK
-$ADKcheck = Test-Path $Dismexe
-if ($ADKcheck -eq $False) {
-Write-Host "`nCannot find ADK DISM, exiting" -ForegroundColor Red 
-exit	
+if (-not (Test-Path -Path $Dismexe)) {
+	Write-Host "`nADK not found, please install the latest version of the Windows 10 ADK" -ForegroundColor Red
+	exit 1
 }
+else {
+	Write-Host "`nFound ADK, moving on" -ForegroundColor Green
+}
+
 
 # Get vanilla WIM name
 Write-Host "`n"
@@ -23,7 +41,15 @@ Write-Host "`n"
 $wim = Read-Host 'What is the name of the required WIM file, including the extension?'
 
 # Get source information
-$sourceIndex = Get-WindowsImage -ImagePath:$origWIM -Name:"Windows 10 Education" | Select-Object -ExpandProperty ImageIndex 
+if ($Edition -eq"Education") {
+	$sourceIndex = Get-WindowsImage -ImagePath:$origWIM -Name:"Windows 10 Education" | Select-Object -ExpandProperty ImageIndex 
+}
+elseif ($Edition -eq "Enterprise") {
+	$sourceIndex = Get-WindowsImage -ImagePath:$origWIM -Name:"Windows 10 Enterprise" | Select-Object -ExpandProperty ImageIndex
+}
+else {
+	Write-Host "`nEdition unknown"
+}
 
 # Extract Education index from WIM
 Write-Host "`nExtracting Windows 10 Education" -ForegroundColor Green
