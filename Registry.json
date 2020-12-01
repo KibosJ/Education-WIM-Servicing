@@ -1,0 +1,156 @@
+{
+  "Explorer": [
+    {
+      "Index": "0",
+      "Name": "LaunchTo",
+      "Value": "1",
+      "Set": "Yes",
+      "Description": "Changes where Explorer windows open to by default"
+    },
+    {
+      "Index": "1",
+      "Name": "StartupDelayInMSec",
+      "Value": "0",
+      "Set": "Yes",
+      "Description": "Disables the startup delay for applications"
+    },
+    {
+      "Index": "2",
+      "Name": "DisableEdgeDesktopShortcutCreation",
+      "Value": "1",
+      "Set": "Yes",
+      "Description": "Disables the creation of the Edge desktop shortcut"
+    }
+  ],
+  "Lockscreen": [
+    {
+      "Index": "0",
+      "Name": "NoLockscreen",
+      "Value": "1",
+      "Set": "Yes",
+      "Description": "Disables the Lock Screen"
+    }
+  ],
+  "UserSwitching": [
+    {
+      "Index": "0",
+      "Name": "HideFastUserSwitching",
+      "Value": "1",
+      "Set": "Yes",
+      "Description": "Disables fast user switching options in the UI"
+    }
+  ],
+  "Search": [
+    {
+      "Index": "0",
+      "Name": "BingSearchEnabled",
+      "Value": "0",
+      "Set": "Yes",
+      "Description": "Disables Bing search"
+    },
+    {
+      "Index": "1",
+      "Name": "CanCortanaBeEnabled",
+      "Value": "0",
+      "Set": "Yes",
+      "Description": "Disables enabling Cortana"
+    },
+    {
+      "Index": "2",
+      "Name": "CortanaEnabled",
+      "Value": "0",
+      "Set": "Yes",
+      "Description": "Disables Cortana"
+    },
+    {
+      "Index": "3",
+      "Name": "SearchboxTaskbarMode",
+      "Value": "1",
+      "Set": "Yes",
+      "Description": "Sets the search button in the taskbar, a value of 0 will disable the search icon"
+    },
+    {
+      "Index": "4",
+      "Name": "AllowSearchToUseLocation",
+      "Value": "0",
+      "Set": "Yes",
+      "Description": "Stops search using location services"
+    },
+    {
+      "Index": "5",
+      "Name": "ConnectedSearchUseWeb",
+      "Value": "0",
+      "Set": "Yes",
+      "Description": "Disables searching the web from search"
+    },
+    {
+      "Index": "6",
+      "Name": "DisableWebSearch",
+      "Value": "1",
+      "Set": "Yes",
+      "Description": "Disables searching the web from search"
+    }
+  ],
+  "Taskbar": [
+    {
+      "Index": "0",
+      "Name": "HidePeopleBar",
+      "Value": "1",
+      "Set": "Yes",
+      "Description": "Disables People features in the taskbar"
+    },
+    {
+      "Index": "1",
+      "Name": "PeopleBand",
+      "Value": "0",
+      "Set": "Yes",
+      "Description": "Disables People features in the taskbar"
+    }
+  ],
+  "CloudContent": [
+    {
+      "Index": "0",
+      "Name": "DisableWindowsConsumerFeatures",
+      "Value": "1",
+      "Set": "Yes",
+      "Description": "Disables consumer features (Pre-loaded games, like Candy Crush, etc.)"
+    },
+    {
+      "Index": "1",
+      "Name": "DisableSoftLanding",
+      "Value": "1",
+      "Set": "Yes",
+      "Description": "Disables Tips, Tricks, and Suggestions notifications"
+    }
+  ],
+  "ContentDelivery": [
+    {
+      "Index": "0",
+      "Name": "SystemPaneSuggestionsEnabled",
+      "Value": "0",
+      "Set": "Yes",
+      "Description": "Disables suggestions on start"
+    },
+    {
+      "Index": "1",
+      "Name": "OemPreInstalledAppsEnabled",
+      "Value": "0",
+      "Set": "Yes",
+      "Description": "Disables OEM pre-installed applications"
+    },
+    {
+      "Index": "2",
+      "Name": "PreInstalledAppsEnabled",
+      "Value": "0",
+      "Set": "Yes",
+      "Description": "Disables pre-installed applications"
+    },
+    {
+      "Index": "3",
+      "Name": "SoftLandingEnabled",
+      "Value": "0",
+      "Set": "Yes",
+      "Description": "Disables Tips, Tricks, and Suggestions notifications"
+    }
+  ]
+}
