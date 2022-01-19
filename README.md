@@ -7,6 +7,7 @@
 - Extracts the “Windows 10 Education” index from the original WIM file 
 - Removes the original WIM file 
 - Applies default app associations from AppAssociations.xml
+- Disables the Windows 11 TPM/SecureBoot check (If it's a Windows 11 WIM)
 - Disables Internet Explorer
 - Enables .NET Framework 3.5 from net35 folder 
 - Modifies default registry settings
@@ -16,16 +17,17 @@
   - Taskbar/search settings
   - Cloud content settings
   - Content delivery manager settings
+- Removes provisioned apps listed in RemoveApps.xml file
+  - A list of the default provisioned apps *as of January 2022* are in the ProvisionedApps folder
 - Copies replacement user account pictures from *UserAccountPictures* to the WIM
 - Copies folders/files from *Root_Folders* to root of WIM
 - Commits the new image
 
-# Changes from Version 2
+# ProvisionedApps
 
-- Removed 1809 .NET framework check, this script will install whatever version you have in the net35 folder
-- Options, when not running as defaults, you will be prompted for what you want to run
-- Putting the relevant files in the UserAccountPictures folder will replace the default user pictures
+Copy the DisplayName attribute of the apps you want removed from the image to a file called *RemoveApps.xml*
 
+A list of the default provisioned apps *as of January 2022* are in the ProvisionedApps folder
 # Registry edits
 
 ## Explorer Items

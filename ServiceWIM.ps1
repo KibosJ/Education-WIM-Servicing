@@ -1,29 +1,40 @@
 #Requires -Version 5.0
 #Requires -RunAsAdministrator
-# Version 3.1
+# Version 3.2
 
 # Variables
 $MountDir = "$PSScriptRoot\Mount"
 $Dismexe = "${env:ProgramFiles(x86)}\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\amd64\DISM\dism.exe"
 $RunDefault = Read-Host 'Would you like to run with defaults?'
+$Win11Ver = "10.0.22000.*"
 
 # Check for Windows ADK
 $ADKcheck = Test-Path $Dismexe
 if ($ADKcheck -eq $False) {
-Write-Host "`nCannot find ADK DISM, exiting" -ForegroundColor Red 
-exit	
+	Write-Host "`nCannot find ADK DISM, exiting" -ForegroundColor Red 
+	exit	
 }
 
 # Get vanilla WIM name
 Write-Host "`n"
-$origWIM = Read-Host 'What is the name of the current WIM file, including extension?'
+$origWIM = Read-Host 'What is the name of the current WIM file?'
+
+if ($origWIM -notlike "*.wim") {
+	$origWIM += ".wim"
+}
 
 # Get name of the required WIM name
 Write-Host "`n"
-$wim = Read-Host 'What is the name of the required WIM file, including the extension?'
+$wim = Read-Host 'What is the name of the required WIM file?'
+
+if ($wim -notlike "*.wim") {
+	$wim += ".wim"
+}
 
 # Get source information
-$sourceIndex = Get-WindowsImage -ImagePath:$origWIM -Name:"Windows 10 Education" | Select-Object -ExpandProperty ImageIndex 
+$wimInfo = Get-WindowsImage -ImagePath:$origWIM -Name:"Windows 10 Education"
+$sourceIndex = $wimInfo.ImageIndex
+$isWin11 = if ($wimInfo.Version -like $Win11Ver) { $true } else { $false }
 
 # Extract Education index from WIM
 Write-Host "`nExtracting Windows 10 Education" -ForegroundColor Green
@@ -57,6 +68,19 @@ if ($ApplyDefaultApps -like "Y*" -or $RunDefault -like "Y*") {
 	& $Dismexe /Image:"$MountDir" /Import-DefaultAppAssociations:"$PSScriptRoot\AppAssociations.xml" /quiet
 }
 
+# Disable Windows 11 TPM check
+if ($RunDefault -notlike "Y*" -and $isWin11 -eq $true) {
+	Write-Host "`n"
+	$DisableTPMCheck = Read-Host "Would you like to disable the Windows 11 TPM/SecureBoot checks?"
+}
+if ($RunDefault -like "Y*" -or $DisableTPMCheck -like "Y*" -and $isWin11 -eq $true) {
+	Write-Host "`nDisabling TPM check" -ForegroundColor Green
+	REG LOAD "HKLM\_SYSTEM" "$MountDir\Windows\System32\config\SYSTEM" | Out-Null
+	REG ADD "HKLM\_SYSTEM\Setup\LabConfig" | Out-Null
+	REG ADD "HKLM\_SYSTEM\Setup\LabConfig" /v BypassTPMCheck /d 1 /t REG_DWORD /f | Out-Null
+	REG ADD "HKLM\_SYSTEM\Setup\LabConfig" /v BypassSecureBootCheck /d 1 /t REG_DWORD /f | Out-Null
+	REG UNLOAD "HKLM\_SYSTEM" | Out-Null
+}
 # Disable features	
 if ($RunDefault -notlike "Y*") {
 	Write-Host "`n"
@@ -74,104 +98,94 @@ if ($RunDefault -notlike "Y*") {
 }
 if ($InstallNetF -like "Y*" -or $RunDefault -like "Y*") {
 	Write-Host "`nInstalling .Net Framework 3.5 Feature" -ForegroundColor Green
-		& $Dismexe /image:"$MountDir" /enable-feature /featurename:NetFx3 /All /LimitAccess /Source:"$PSScriptRoot\net35" /quiet	
+	& $Dismexe /image:"$MountDir" /enable-feature /featurename:NetFx3 /All /LimitAccess /Source:"$PSScriptRoot\net35" /quiet	
 }
 
 # Customise registry
 if ($RunDefault -notlike "Y*") {
 	Write-Host "`n"
 	$CustomiseREG = Read-Host 'Would you like to customise the registry?'
-	}
+}
 
 if ($CustomiseREG -like "Y*" -or $RunDefault -like "Y*") {
 	Write-Host "`nCustomising registry" -ForegroundColor Green
 
-# Mount registry
+	# Mount registry
 	REG LOAD "HKLM\_NTUSER" "$MountDir\Users\Default\NTUSER.DAT" | Out-Null
 	REG LOAD "HKLM\_SOFTWARE" "$MountDir\Windows\System32\config\SOFTWARE" | Out-Null
 
-# Explorer items
+	# Explorer items
 	if ($RunDefault -notlike "Y*") {
-	Write-Host "`n"
-	$ExplorerREG = Read-Host 'Modify Explorer items?'
+		Write-Host "`n"
+		$ExplorerREG = Read-Host 'Modify Explorer items?'
 	}
 	if ($ExplorerREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Host "`nCustomising explorer settings" -ForegroundColor Green
-		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v LaunchTo /d 1 /t REG_DWORD /f
-		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize" /v StartupDelayInMSec /d 0 /t REG_DWORD /f
-		& REG ADD "HKLM\_SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /v DisableEdgeDesktopShortcutCreation /d 1 /t REG_DWORD /f
+		REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v LaunchTo /d 1 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize" /v StartupDelayInMSec /d 0 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /v DisableEdgeDesktopShortcutCreation /d 1 /t REG_DWORD /f | Out-Null
 	}
-# Disable lockscreen
+	# Disable lockscreen
 	if ($RunDefault -notlike "Y*") {
-	Write-Host "`n"
-	$LockscreenREG = Read-Host 'Disable the lockscreen?'
+		Write-Host "`n"
+		$LockscreenREG = Read-Host 'Disable the lockscreen?'
 	}
 	if ($LockscreenREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Host "`nDisabling lockscreen" -ForegroundColor Green
-		& REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\Personalization" /v NoLockscreen /d 1 /t REG_DWORD /f
+		REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\Personalization" /v NoLockscreen /d 1 /t REG_DWORD /f | Out-Null
 	}
-# Disable fast user switching
+	# Disable fast user switching
 	if ($RunDefault -notlike "Y*") {
-	Write-Host "`n"
-	$FastUserREG = Read-Host 'Disable fast user switching?'
+		Write-Host "`n"
+		$FastUserREG = Read-Host 'Disable fast user switching?'
 	}
 	if ($FastUserREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Host "`nDisabling fast user switching" -ForegroundColor Green
-		& REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Policies\System" /v HideFastUserSwitching /d 1 /t REG_DWORD /f
+		REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Policies\System" /v HideFastUserSwitching /d 1 /t REG_DWORD /f | Out-Null
 	}
-# Taskbar/Search settings
+	# Taskbar/Search settings
 	if ($RunDefault -notlike "Y*") {
-	Write-Host "`n"
-	$TaskbarSearchREG = Read-Host 'Modify taskbar/search settings?'
+		Write-Host "`n"
+		$TaskbarSearchREG = Read-Host 'Modify taskbar/search settings?'
 	}
 	if ($TaskbarSearchREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Host "`nCustomising taskbar/search settings" -ForegroundColor Green
-		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search" /v BingSearchEnabled /d 0 /t REG_DWORD /f
-		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search" /v CanCortanaBeEnabled /d 0 /t REG_DWORD /f
-		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search" /v CortanaEnabled /d 0 /t REG_DWORD /f
-		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search" /v SearchboxTaskbarMode /d 1 /t REG_DWORD /f
-		& REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v AllowSearchToUseLocation /d 0 /t REG_DWORD /f
-		& REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v ConnectedSearchUseWeb /d 0 /t REG_DWORD /f
-		& REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v DisableWebSearch /d 1 /t REG_DWORD /f
-		& REG ADD "HKLM\_NTUSER\Software\Policies\Microsoft\Windows\Explorer" /v HidePeopleBar /d 1 /t REG_DWORD /f
-		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" /v PeopleBand /d 0 /t REG_DWORD /f
+		REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search" /v BingSearchEnabled /d 0 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search" /v CanCortanaBeEnabled /d 0 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search" /v CortanaEnabled /d 0 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Search" /v SearchboxTaskbarMode /d 1 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v AllowSearchToUseLocation /d 0 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v ConnectedSearchUseWeb /d 0 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v DisableWebSearch /d 1 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_NTUSER\Software\Policies\Microsoft\Windows\Explorer" /v HidePeopleBar /d 1 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" /v PeopleBand /d 0 /t REG_DWORD /f | Out-Null
 	}
-# Cloud content settings
+	# Cloud content settings
 	if ($RunDefault -notlike "Y*") {
-	Write-Host "`n"
-	$CloudContentREG = Read-Host 'Modify cloud content settings?'
+		Write-Host "`n"
+		$CloudContentREG = Read-Host 'Modify cloud content settings?'
 	}
 	if ($CloudContentREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Host "`nCustomising cloud content settings" -ForegroundColor Green
-		& REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v DisableWindowsConsumerFeatures /d 1 /t REG_DWORD /f
-		& REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v DisableSoftLanding /d 1 /t REG_DWORD /f
+		REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v DisableWindowsConsumerFeatures /d 1 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v DisableSoftLanding /d 1 /t REG_DWORD /f | Out-Null
 	}
-# Content delivery manager settings
+	# Content delivery manager settings
 	if ($RunDefault -notlike "Y*") {
-	Write-Host "`n"
-	$ContentDeliveryREG = Read-Host 'Modify content delivery manager settings?'
+		Write-Host "`n"
+		$ContentDeliveryREG = Read-Host 'Modify content delivery manager settings?'
 	}
 	if ($ContentDeliveryREG -like "Y*" -or $RunDefault -like "Y*") {
 		Write-Host "`nCustomising content delivery manager settings" -ForegroundColor Green
-		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SystemPaneSuggestionsEnabled /d 0 /t REG_DWORD /f
-		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v OemPreInstalledAppsEnabled /d 0 /t REG_DWORD /f
-		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v PreInstalledAppsEnabled /d 0 /t REG_DWORD /f
-		& REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SoftLandingEnabled /d 0 /t REG_DWORD /f
+		REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SystemPaneSuggestionsEnabled /d 0 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v OemPreInstalledAppsEnabled /d 0 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v PreInstalledAppsEnabled /d 0 /t REG_DWORD /f | Out-Null
+		REG ADD "HKLM\_NTUSER\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SoftLandingEnabled /d 0 /t REG_DWORD /f | Out-Null
 	}
 	
-# Unmount registry
-REG UNLOAD "HKLM\_NTUSER" | Out-Null
-REG UNLOAD "HKLM\_SOFTWARE" | Out-Null
-}
-
-# Copy user account images
-if ($RunDefault -notlike "Y*") {
-	Write-Host "`n"
-	$UserAccPics = Read-Host 'Would you like to replace the default user account images?'
-}
-if ($UserAccPics -like "Y*" -or $RunDefault -like "Y*") {
-	Write-Host "`nCopying replacement user account images" -ForegroundColor Green
-	xcopy UserAccountPictures\*.* "$MountDir\ProgramData\Microsoft\User Account Pictures\" /EXCLUDE:CopyExclusions.txt /E /C /H /Y
+	# Unmount registry
+	REG UNLOAD "HKLM\_NTUSER" | Out-Null
+	REG UNLOAD "HKLM\_SOFTWARE" | Out-Null
 }
 
 # Remove provisioned apps
@@ -190,9 +204,20 @@ if ($RemoveProvApps -like "Y*" -or $RunDefault -like "Y*" -and (Test-Path -Path 
 	foreach ($i in $Removeapps) { 
 		$appstr += $provisionedApps | Where-Object { $_.DisplayName -eq $i } 
 	}
-	foreach ($app in $appstr.PackageName) { 
-		Remove-AppxProvisionedPackage -Path $MountDir -PackageName $app -LogLevel 1
+	foreach ($app in $appstr.PackageName) {
+		Write-Host "`n Removing $app" 
+		Remove-AppxProvisionedPackage -Path $MountDir -PackageName $app -LogLevel 1 | Out-Null
 	}
+}
+
+# Copy user account images
+if ($RunDefault -notlike "Y*") {
+	Write-Host "`n"
+	$UserAccPics = Read-Host 'Would you like to replace the default user account images?'
+}
+if ($UserAccPics -like "Y*" -or $RunDefault -like "Y*") {
+	Write-Host "`nCopying replacement user account images" -ForegroundColor Green
+	xcopy UserAccountPictures\*.* "$MountDir\ProgramData\Microsoft\User Account Pictures\" /EXCLUDE:CopyExclusions.txt /E /C /H /Y
 }
 
 # Copy folders to local disk
