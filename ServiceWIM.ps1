@@ -1,6 +1,6 @@
 #Requires -Version 5.0
 #Requires -RunAsAdministrator
-# Version 3.0
+# Version 3.1
 
 # Variables
 $MountDir = "$PSScriptRoot\Mount"
@@ -169,9 +169,30 @@ if ($RunDefault -notlike "Y*") {
 	Write-Host "`n"
 	$UserAccPics = Read-Host 'Would you like to replace the default user account images?'
 }
-if ($UserAccPics -like "Y*" -or $RunDefault -like "Y") {
+if ($UserAccPics -like "Y*" -or $RunDefault -like "Y*") {
 	Write-Host "`nCopying replacement user account images" -ForegroundColor Green
 	xcopy UserAccountPictures\*.* "$MountDir\ProgramData\Microsoft\User Account Pictures\" /EXCLUDE:CopyExclusions.txt /E /C /H /Y
+}
+
+# Remove provisioned apps
+if ($RunDefault -notlike "Y*") {
+	Write-Host "`n"
+	$RemoveProvApps = Read-Host 'Would you like to remove provisioned apps listed in RemoveApps.xml?'
+}
+if ($RemoveProvApps -like "Y*" -and !(Test-Path -Path "$PSScriptRoot\RemoveApps.xml")) {
+	Write-Host "`nThere isn't a RemoveApps.xml file" -ForegroundColor Red
+}
+if ($RemoveProvApps -like "Y*" -or $RunDefault -like "Y*" -and (Test-Path -Path "$PSScriptRoot\RemoveApps.xml")) {
+	Write-Host "`nRemoving provisioned apps from RemoveApps.xml" -ForegroundColor Green
+	$Removeapps = Get-Content "$PSScriptRoot\RemoveApps.xml"
+	$provisionedApps = Get-AppxProvisionedPackage -Path $MountDir
+	$appstr = @()
+	foreach ($i in $Removeapps) { 
+		$appstr += $provisionedApps | Where-Object { $_.DisplayName -eq $i } 
+	}
+	foreach ($app in $appstr.PackageName) { 
+		Remove-AppxProvisionedPackage -Path $MountDir -PackageName $app -LogLevel 1
+	}
 }
 
 # Copy folders to local disk
@@ -185,7 +206,7 @@ if ($CopyRoot -like "Y*" -or $RunDefault -like "Y*") {
 }
 # Commit image
 Write-Host "`nCommiting WIM image, this may take some time" -ForegroundColor Green
-& $Dismexe /Unmount-Image /MountDir:"$MountDir" /Commit
+& $Dismexe /Unmount-Image /MountDir:$MountDir /Commit
 
 # The end
 Write-Host "`nThe WIM image should now be commited with all chosen modifications, we've paused here so you can see any errors!" -ForegroundColor Green
