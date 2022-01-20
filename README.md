@@ -1,4 +1,4 @@
-# What the Version 3 script does by default?
+# What the Version 3 script does by default
 
 **If you choose not to run defaults, each step below will ask you if you wish to run it or not, type *y/yes* or *n/no***
 
