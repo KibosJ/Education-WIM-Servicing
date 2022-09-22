@@ -1,12 +1,19 @@
 #Requires -Version 5.0
 #Requires -RunAsAdministrator
-# Version 3.2
+# Version 3.3
 
 # Variables
 $MountDir = "$PSScriptRoot\Mount"
-$Dismexe = "${env:ProgramFiles(x86)}\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\amd64\DISM\dism.exe"
+if ($Env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
+	$Dismexe = "${env:ProgramFiles(x86)}\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\arm64\DISM\dism.exe"
+}
+else {
+	$Dismexe = "${env:ProgramFiles(x86)}\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\amd64\DISM\dism.exe"
+}
+
 $RunDefault = Read-Host 'Would you like to run with defaults?'
-$Win11Ver = "10.0.22000.*"
+$Win11_21H2 = "10.0.22000.*"
+$Win11_22H2 = "10.0.22621.*"
 
 # Check for Windows ADK
 $ADKcheck = Test-Path $Dismexe
@@ -32,13 +39,23 @@ if ($wim -notlike "*.wim") {
 }
 
 # Get source information
-$wimInfo = Get-WindowsImage -ImagePath:$origWIM -Name:"Windows 10 Education"
+$wimInfo = Get-WindowsImage -ImagePath:$origWIM -Name:"*Education"
 $sourceIndex = $wimInfo.ImageIndex
-$isWin11 = if ($wimInfo.Version -like $Win11Ver) { $true } else { $false }
+$isWin11 = if ($wimInfo.Version -like $Win11_21H2 -or $wimInfo.Version -like $Win11_22H2) { 
+	$true 
+} 
+else { 
+	$false 
+}
 
 # Extract Education index from WIM
-Write-Host "`nExtracting Windows 10 Education" -ForegroundColor Green
-& $Dismexe /Export-Image /SourceImageFile:$origWIM /SourceIndex:$sourceIndex /DestinationImageFile:$wim /Compress:Max /CheckIntegrity /quiet
+if ($wimInfo.Count -gt 1) {
+	Write-Host "`nExtracting Windows Education" -ForegroundColor Green
+	& $Dismexe /Export-Image /SourceImageFile:$origWIM /SourceIndex:$sourceIndex /DestinationImageFile:$wim /Compress:Max /CheckIntegrity /quiet
+}
+else {
+	CopyItem -Path $origWIM -Destination $wim
+}
 
 # Delete the old WIM
 if ($RunDefault -notlike "Y*") {
@@ -54,7 +71,7 @@ if ($deleteoldwim -like "Y*" -or $RunDefault -like "Y*") {
 # Mount WIM file
 Write-Host "`nMounting WIM image" -ForegroundColor Green
 if ((Test-Path $MountDir) -eq $False) {
-	New-Item -Path $PSScriptRoot -name "Mount" -ItemType "directory"
+	New-Item -Path $PSScriptRoot -Name "Mount" -ItemType "directory"
 }
 & $Dismexe /Mount-Image /ImageFile:"$PSScriptRoot\$wim" /index:1 /MountDir:"$MountDir" /quiet
 
@@ -82,14 +99,14 @@ if ($RunDefault -like "Y*" -or $DisableTPMCheck -like "Y*" -and $isWin11 -eq $tr
 	REG UNLOAD "HKLM\_SYSTEM" | Out-Null
 }
 # Disable features	
-if ($RunDefault -notlike "Y*") {
-	Write-Host "`n"
-	$RemoveIE = Read-Host 'Would you like to remove Internet Explorer?'
-}
-if ($RemoveIE -like "Y*" -or $RunDefault -like "Y*") {
-	Write-Host "`nDisabling Internet Explorer" -ForegroundColor Green
-	& $Dismexe /Image:"$MountDir" /Disable-Feature /FeatureName:Internet-Explorer-Optional-amd64 /quiet
-}
+#if ($RunDefault -notlike "Y*") {
+#	Write-Host "`n"
+#	$RemoveIE = Read-Host 'Would you like to remove Internet Explorer?'
+#}
+#if ($RemoveIE -like "Y*" -or $RunDefault -like "Y*") {
+#	Write-Host "`nDisabling Internet Explorer" -ForegroundColor Green
+#	& $Dismexe /Image:"$MountDir" /Disable-Feature /FeatureName:Internet-Explorer-Optional-amd64 /quiet
+#}
 
 # Install features
 if ($RunDefault -notlike "Y*") {
@@ -235,4 +252,4 @@ Write-Host "`nCommiting WIM image, this may take some time" -ForegroundColor Gre
 
 # The end
 Write-Host "`nThe WIM image should now be commited with all chosen modifications, we've paused here so you can see any errors!" -ForegroundColor Green
-pause
+Pause

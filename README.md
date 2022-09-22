@@ -4,11 +4,11 @@
 
 - Asks for the name of the original WIM file (usually just install.wim)
 - Asks for the name of the required WIM file
-- Extracts the “Windows 10 Education” index from the original WIM file 
+- Extracts the “Windows 10/11 Education” index from the original WIM file 
 - Removes the original WIM file 
 - Applies default app associations from AppAssociations.xml
 - Disables the Windows 11 TPM/SecureBoot check (If it's a Windows 11 WIM)
-- Disables Internet Explorer
+~~- Disables Internet Explorer~~
 - Enables .NET Framework 3.5 from net35 folder 
 - Modifies default registry settings
   - Explorer items
@@ -18,7 +18,7 @@
   - Cloud content settings
   - Content delivery manager settings
 - Removes provisioned apps listed in RemoveApps.xml file
-  - A list of the default provisioned apps *as of January 2022* are in the ProvisionedApps folder
+  - A list of the default provisioned apps *as of September 2022* are in the ProvisionedApps folder
 - Copies replacement user account pictures from *UserAccountPictures* to the WIM
 - Copies folders/files from *Root_Folders* to root of WIM
 - Commits the new image
