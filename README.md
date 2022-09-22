@@ -8,7 +8,7 @@
 - Removes the original WIM file 
 - Applies default app associations from AppAssociations.xml
 - Disables the Windows 11 TPM/SecureBoot check (If it's a Windows 11 WIM)
-~~- Disables Internet Explorer~~
+- ~~Disables Internet Explorer~~
 - Enables .NET Framework 3.5 from net35 folder 
 - Modifies default registry settings
   - Explorer items
